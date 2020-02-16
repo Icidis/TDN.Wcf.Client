@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\TDN.Wcf.Client\TDN.Wcf.Client.csproj" />
+    <ProjectReference Include="..\WCFServiceContracts\WCFServiceContracts.csproj" />
+  </ItemGroup>
+
+</Project>

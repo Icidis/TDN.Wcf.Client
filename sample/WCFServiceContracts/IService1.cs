@@ -1,0 +1,14 @@
+﻿using System.ServiceModel;
+
+namespace WCFServiceContracts
+{
+    [ServiceContract]
+    public interface IService1
+    {
+        [OperationContract]
+        string GetData(int value);
+
+        [OperationContract]
+        CompositeType GetDataUsingDataContract(CompositeType composite);
+    }
+}
