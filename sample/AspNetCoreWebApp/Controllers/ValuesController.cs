@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using TDN.Wcf.Client.Interfaces;
+using TDN.Wcf.Client.Abstractions;
 using WCFServiceContracts;
 
 namespace AspNetCoreWebApp.Controllers
@@ -10,9 +10,9 @@ namespace AspNetCoreWebApp.Controllers
     public class ValuesController : ControllerBase
     {
         private readonly ILogger<ValuesController> _logger;
-        private readonly IWCFClientFactory _wcfClientFactory;
+        private readonly IWcfClientFactory _wcfClientFactory;
 
-        public ValuesController(ILogger<ValuesController> logger, IWCFClientFactory wcfClientFactory)
+        public ValuesController(ILogger<ValuesController> logger, IWcfClientFactory wcfClientFactory)
         {
             _logger = logger;
             _wcfClientFactory = wcfClientFactory;
@@ -21,7 +21,7 @@ namespace AspNetCoreWebApp.Controllers
         [HttpGet]
         public CompositeType Get()
         {
-            var client = _wcfClientFactory.CreateClient<IService1>("http://localhost:51677/Service1.svc");
+            var client = _wcfClientFactory.CreateClient<IService1>("BindingBasicHttp", "http://localhost:51677/Service1.svc");
 
             return client.GetDataUsingDataContract(new CompositeType()
             {

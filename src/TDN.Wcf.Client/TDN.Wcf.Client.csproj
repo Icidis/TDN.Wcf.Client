@@ -11,6 +11,9 @@
     <PackageTags>WCF, Client, Windows Communication Foundation</PackageTags>
     <RepositoryType>Library</RepositoryType>
     <Copyright>Ryan Gunn 2020</Copyright>
+    <Version>2.0.0</Version>
+    <PackageReleaseNotes>Rework library
+Allowed for multiple binding configurations</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
