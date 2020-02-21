@@ -1,3 +1,5 @@
+[![Build Status](https://dev.azure.com/icidisvs/GitHub/_apis/build/status/Icidis.TDN.Wcf.Client?branchName=master)](https://dev.azure.com/icidisvs/GitHub/_build/latest?definitionId=1&branchName=master)
+
 # TDN.Wcf.Client
 .NET Standard WCF Client
 
