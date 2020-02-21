@@ -3,7 +3,7 @@ using System.ServiceModel;
 
 namespace TDN.Wcf.Client.Configuration
 {
-    public class WcfServiceConfiguration
+    public class BindingBasicHttpConfiguration
     {
         public long? MaxBufferPoolSize { get; set; }
         public long? MaxReceivedMessageSize { get; set; }
@@ -17,28 +17,28 @@ namespace TDN.Wcf.Client.Configuration
         public BasicHttpSecurityMode BasicHttpSecurityMode { get; set; }
         public HttpClientCredentialType HttpClientCredentialType { get; set; }
 
-        public WcfServiceConfiguration SetMaxSizes(long maxBufferPoolSize, long maxReceivedMessageSize)
+        public BindingBasicHttpConfiguration SetMaxSizes(long maxBufferPoolSize, long maxReceivedMessageSize)
         {
             this.MaxBufferPoolSize = maxBufferPoolSize;
             this.MaxReceivedMessageSize = maxReceivedMessageSize;
             return this;
         }
 
-        public WcfServiceConfiguration SetReaderQuotas(int maxArrayLength, int maxStringContentLength)
+        public BindingBasicHttpConfiguration SetReaderQuotas(int maxArrayLength, int maxStringContentLength)
         {
             this.ReaderQuotasMaxArrayLength = maxArrayLength;
             this.ReaderQuotasMaxStringContentLength = maxStringContentLength;
             return this;
         }
 
-        public WcfServiceConfiguration SetTimeouts(TimeSpan sendTimeout, TimeSpan receiveTimeout)
+        public BindingBasicHttpConfiguration SetTimeouts(TimeSpan sendTimeout, TimeSpan receiveTimeout)
         {
             this.SendTimeout = sendTimeout;
             this.ReceiveTimeout = receiveTimeout;
             return this;
         }
 
-        public WcfServiceConfiguration SetBasicHttpBindingSecurity(BasicHttpSecurityMode basicHttpSecurityMode, HttpClientCredentialType httpClientCredentialType)
+        public BindingBasicHttpConfiguration SetBasicHttpBindingSecurity(BasicHttpSecurityMode basicHttpSecurityMode, HttpClientCredentialType httpClientCredentialType)
         {
             this.BasicHttpSecurityMode = basicHttpSecurityMode;
             this.HttpClientCredentialType = httpClientCredentialType;

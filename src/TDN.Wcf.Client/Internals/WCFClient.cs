@@ -3,9 +3,9 @@ using System.ServiceModel;
 using System.ServiceModel.Channels;
 using System.ServiceModel.Description;
 
-namespace TDN.Wcf.Client
+namespace TDN.Wcf.Client.Internals
 {
-    public class WCFClient<WCFServiceContract> : IDisposable
+    internal class WCFClient<WCFServiceContract> : IDisposable
     {
         public readonly WCFServiceContract Proxy;
         private readonly ChannelFactory<WCFServiceContract> _channelFactory;
