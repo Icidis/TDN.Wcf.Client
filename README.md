@@ -1,8 +1,7 @@
 [![Build Status](https://dev.azure.com/icidisvs/GitHub/_apis/build/status/Icidis.TDN.Wcf.Client?branchName=master)](https://dev.azure.com/icidisvs/GitHub/_build/latest?definitionId=1&branchName=master)
 
 # TDN.Wcf.Client
-.NET Standard WCF Client
-
+.NET Standard WCF Client library
 
 ## Usage
 
@@ -19,12 +18,20 @@ public interface IService1
 
 ### Update you .NET Core application with the following
 
+Note, the BindingBasicHttp implements IWcfBinding which ahs a binding name of "BindingBasicHttp"
+
 #### Startup.cs
 
 ```
-services.AddWCFClientFactory<BasicHttpBindingFactory>(TDN.Wcf.Client.Enums.HttpBinding.BasicHttpBinding, options =>
+services.AddWcfClientFactory(options =>
 {
-    options.SetBasicHttpBindingSecurity(System.ServiceModel.BasicHttpSecurityMode.None, System.ServiceModel.HttpClientCredentialType.None);
+    options.AddWcfBinding(new BindingBasicHttp(c =>
+    {
+        c.SetBasicHttpBindingSecurity(basicHttpSecurityMode: BasicHttpSecurityMode.None, httpClientCredentialType: HttpClientCredentialType.None);
+        c.SetMaxSizes(maxBufferPoolSize: 524288, maxReceivedMessageSize: 65536);
+        c.SetReaderQuotas(maxArrayLength: 16384, maxStringContentLength: 8192);
+        c.SetTimeouts(sendTimeout: new TimeSpan(0, 1, 0), receiveTimeout: new TimeSpan(0, 1, 0));
+    }));
 });
 ```
 
@@ -34,9 +41,9 @@ services.AddWCFClientFactory<BasicHttpBindingFactory>(TDN.Wcf.Client.Enums.HttpB
 [Route("[controller]")]
 public class ValuesController : ControllerBase
 {
-    private readonly IWCFClientFactory _wcfClientFactory;
+    private readonly IWcfClientFactory _wcfClientFactory;
 
-    public ValuesController(IWCFClientFactory wcfClientFactory)
+    public ValuesController(IWcfClientFactory wcfClientFactory)
     {
         _wcfClientFactory = wcfClientFactory;
     }
@@ -44,13 +51,82 @@ public class ValuesController : ControllerBase
     [HttpGet]
     public CompositeType Get()
     {
-        var client = _wcfClientFactory.CreateClient<IService1>("http://localhost/Service1.svc");
+        var client = _wcfClientFactory.CreateClient<IService1>("BindingBasicHttp", "http://localhost:51677/Service1.svc");
 
         return client.GetDataUsingDataContract(new CompositeType()
         {
             BoolValue = true,
             StringValue = "Test from WCF"
         });
+    }
+}
+```
+
+### Create your own binding
+
+Create a class and implement the **IWcfBinding** interface such as below with the configuration and binding you require. This class will then be registered on Startup by using the **AddWcfBinding** method when configuring the WcfClientFactory using **AddWcfClientFactory**.
+
+```
+public class BindingBasicHttp : IWcfBinding
+{
+    private readonly BasicHttpBinding _binding;
+    public readonly int _maxItemsInObjectGraph = 65536;
+
+    string IWcfBinding.Name => nameof(BindingBasicHttp);
+
+    public int MaxItemsInObjectGraph => _maxItemsInObjectGraph;
+
+    public BindingBasicHttp(BasicHttpBinding binding)
+    {
+        _binding = binding;
+    }
+
+    public BindingBasicHttp(BindingBasicHttpConfiguration configuration)
+    {
+        _binding = new BasicHttpBinding
+        {
+            MaxBufferPoolSize = configuration.MaxBufferPoolSize.GetValueOrDefault(524288),
+            MaxReceivedMessageSize = configuration.MaxReceivedMessageSize.GetValueOrDefault(65536),
+            SendTimeout = configuration.SendTimeout.GetValueOrDefault(new TimeSpan(0, 1, 0)),
+            ReceiveTimeout = configuration.ReceiveTimeout.GetValueOrDefault(new TimeSpan(0, 1, 0))
+        };
+
+        _binding.ReaderQuotas.MaxArrayLength = configuration.ReaderQuotasMaxArrayLength.GetValueOrDefault(16384);
+        _binding.ReaderQuotas.MaxStringContentLength = configuration.ReaderQuotasMaxStringContentLength.GetValueOrDefault(8192);
+
+        _binding.Security.Mode = configuration.BasicHttpSecurityMode;
+        _binding.Security.Transport.ClientCredentialType = configuration.HttpClientCredentialType;
+
+        //Max Items in Object Graph
+        _maxItemsInObjectGraph = configuration.MaxItemsInObjectGraph.GetValueOrDefault(65536);
+    }
+
+    public BindingBasicHttp(Action<BindingBasicHttpConfiguration> options)
+    {
+        var configuration = new BindingBasicHttpConfiguration();
+        options?.Invoke(configuration);
+
+        _binding = new BasicHttpBinding
+        {
+            MaxBufferPoolSize = configuration.MaxBufferPoolSize.GetValueOrDefault(524288),
+            MaxReceivedMessageSize = configuration.MaxReceivedMessageSize.GetValueOrDefault(65536),
+            SendTimeout = configuration.SendTimeout.GetValueOrDefault(new TimeSpan(0, 1, 0)),
+            ReceiveTimeout = configuration.ReceiveTimeout.GetValueOrDefault(new TimeSpan(0, 1, 0))
+        };
+
+        _binding.ReaderQuotas.MaxArrayLength = configuration.ReaderQuotasMaxArrayLength.GetValueOrDefault(16384);
+        _binding.ReaderQuotas.MaxStringContentLength = configuration.ReaderQuotasMaxStringContentLength.GetValueOrDefault(8192);
+
+        _binding.Security.Mode = configuration.BasicHttpSecurityMode;
+        _binding.Security.Transport.ClientCredentialType = configuration.HttpClientCredentialType;
+
+        //Max Items in Object Graph
+        _maxItemsInObjectGraph = configuration.MaxItemsInObjectGraph.GetValueOrDefault(65536);
+    }
+
+    Binding IWcfBinding.GetBinding()
+    {
+        return _binding;
     }
 }
 ```
