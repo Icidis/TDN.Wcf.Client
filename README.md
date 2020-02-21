@@ -5,7 +5,7 @@
 
 ## Usage
 
-If you exposing a WCF service with the following service contract
+Exposing a WCF service (NET4/4.5 etc) with the following service contract
 
 ```
 [ServiceContract]
@@ -16,13 +16,16 @@ public interface IService1
 }
 ```
 
-### Update you .NET Core application with the following
+### Update your .NET Core application with the following
 
-Note, the BindingBasicHttp implements IWcfBinding which ahs a binding name of "BindingBasicHttp"
+Note, the BindingBasicHttp implements IWcfBinding which has a binding name of "BindingBasicHttp"
 
 #### Startup.cs
 
 ```
+using TDN.Wcf.Client.Bindings;
+using TDN.Wcf.Client.Extensions;
+
 services.AddWcfClientFactory(options =>
 {
     options.AddWcfBinding(new BindingBasicHttp(c =>
@@ -38,6 +41,9 @@ services.AddWcfClientFactory(options =>
 #### Controller.cs
 
 ```
+using WCFServiceContracts;
+using TDN.Wcf.Client.Abstractions;
+
 [Route("[controller]")]
 public class ValuesController : ControllerBase
 {
@@ -67,6 +73,12 @@ public class ValuesController : ControllerBase
 Create a class and implement the **IWcfBinding** interface such as below with the configuration and binding you require. This class will then be registered on Startup by using the **AddWcfBinding** method when configuring the WcfClientFactory using **AddWcfClientFactory**.
 
 ```
+using System;
+using System.ServiceModel;
+using System.ServiceModel.Channels;
+using TDN.Wcf.Client.Abstractions;
+using TDN.Wcf.Client.Configuration;
+
 public class BindingBasicHttp : IWcfBinding
 {
     private readonly BasicHttpBinding _binding;
