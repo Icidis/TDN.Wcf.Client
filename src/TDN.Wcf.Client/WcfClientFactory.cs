@@ -9,28 +9,39 @@ namespace TDN.Wcf.Client
     {
         private readonly Dictionary<string, IWcfBinding> _bindings;
 
-        public WcfClientFactory(IEnumerable<IWcfBinding> bindings)
+        public WcfClientFactory(IEnumerable<IWcfBinding> wcfBindings)
         {
             _bindings = new Dictionary<string, IWcfBinding>(StringComparer.OrdinalIgnoreCase);
-            foreach (var binding in bindings)
+            foreach (var wcfBinding in wcfBindings)
             {
-                if (!_bindings.ContainsKey(binding.Name))
+                var typeName = GetTypeName(wcfBinding: wcfBinding);
+                if (!_bindings.ContainsKey(typeName))
                 {
-                    _bindings.Add(binding.Name, binding);
+                    _bindings.Add(typeName, wcfBinding);
                 }
             }
         }
 
-        public WCFServiceContract CreateClient<WCFServiceContract>(string bindingName, string endpointAddressUri)
+        public TWcfServiceContract CreateClient<TWcfServiceContract, TWcfBinding>(string endpointAddressUri) where TWcfBinding : IWcfBinding
         {
-            if (_bindings.TryGetValue(bindingName, out IWcfBinding binding))
+            var typeName = typeof(TWcfBinding).FullName;
+            if (_bindings.TryGetValue(typeName, out IWcfBinding binding))
             {
-                return new WCFClient<WCFServiceContract>(binding.GetBinding(), endpointAddressUri, binding.MaxItemsInObjectGraph).Proxy;
+                return new WCFClient<TWcfServiceContract>(binding.GetBinding(), endpointAddressUri, binding.MaxItemsInObjectGraph).Proxy;
             }
             else
             {
-                throw new ArgumentException($"Binding configuration with name {bindingName} not found.", nameof(bindingName));
+                throw new ArgumentException($"Binding configuration with name {typeName} not found.", nameof(TWcfBinding));
             }
+        }
+
+        private string GetTypeName(IWcfBinding wcfBinding)
+        {
+            if (wcfBinding is null)
+            {
+                throw new ArgumentException(nameof(wcfBinding));
+            }
+            return wcfBinding.GetType().FullName;
         }
     }
 }
