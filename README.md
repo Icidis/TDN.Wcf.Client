@@ -43,6 +43,7 @@ services.AddWcfClientFactory(options =>
 ```
 using WCFServiceContracts;
 using TDN.Wcf.Client.Abstractions;
+using TDN.Wcf.Client.Bindings;
 
 [Route("[controller]")]
 public class ValuesController : ControllerBase
@@ -57,7 +58,7 @@ public class ValuesController : ControllerBase
     [HttpGet]
     public CompositeType Get()
     {
-        var client = _wcfClientFactory.CreateClient<IService1>("BindingBasicHttp", "http://localhost:51677/Service1.svc");
+        var client = _wcfClientFactory.CreateClient<IService1, BindingBasicHttp>(endpointAddressUri: "http://localhost:51677/Service1.svc");
 
         return client.GetDataUsingDataContract(new CompositeType()
         {
@@ -83,8 +84,6 @@ public class BindingBasicHttp : IWcfBinding
 {
     private readonly BasicHttpBinding _binding;
     public readonly int _maxItemsInObjectGraph = 65536;
-
-    string IWcfBinding.Name => nameof(BindingBasicHttp);
 
     public int MaxItemsInObjectGraph => _maxItemsInObjectGraph;
 
