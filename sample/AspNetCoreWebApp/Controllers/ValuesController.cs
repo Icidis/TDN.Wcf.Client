@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using TDN.Wcf.Client.Abstractions;
+using TDN.Wcf.Client.Bindings;
 using WCFServiceContracts;
 
 namespace AspNetCoreWebApp.Controllers
@@ -21,7 +22,7 @@ namespace AspNetCoreWebApp.Controllers
         [HttpGet]
         public CompositeType Get()
         {
-            var client = _wcfClientFactory.CreateClient<IService1>("BindingBasicHttp", "http://localhost:51677/Service1.svc");
+            var client = _wcfClientFactory.CreateClient<IService1, BindingBasicHttp>(endpointAddressUri: "http://localhost:51677/Service1.svc");
 
             return client.GetDataUsingDataContract(new CompositeType()
             {

@@ -2,6 +2,6 @@
 {
     public interface IWcfClientFactory
     {
-        WCFServiceContract CreateClient<WCFServiceContract>(string bindingName, string endpointAddressUri);
+        TWcfServiceContract CreateClient<TWcfServiceContract, TWcfBinding>(string endpointAddressUri) where TWcfBinding : IWcfBinding;
     }
 }

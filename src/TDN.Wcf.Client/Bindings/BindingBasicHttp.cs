@@ -11,8 +11,6 @@ namespace TDN.Wcf.Client.Bindings
         private readonly BasicHttpBinding _binding;
         public readonly int _maxItemsInObjectGraph = 65536;
 
-        string IWcfBinding.Name => nameof(BindingBasicHttp);
-
         public int MaxItemsInObjectGraph => _maxItemsInObjectGraph;
 
         public BindingBasicHttp(BasicHttpBinding binding)
